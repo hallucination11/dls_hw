@@ -11,6 +11,7 @@ TENSOR_COUNTER = 0
 # NOTE: we will import numpy as the array_api
 # as the backend for our computations, this line will change in later homeworks
 import numpy as array_api
+
 NDArray = numpy.ndarray
 
 
@@ -33,9 +34,11 @@ class CPUDevice(Device):
     def enabled(self):
         return True
 
+
 def cpu():
     """Return cpu device"""
     return CPUDevice()
+
 
 def all_devices():
     """return a list of all available devices"""
@@ -65,7 +68,7 @@ class Op:
         raise NotImplementedError()
 
     def gradient(
-        self, out_grad: "Value", node: "Value"
+            self, out_grad: "Value", node: "Value"
     ) -> Union["Value", Tuple["Value"]]:
         """Compute partial adjoint for each input value for a given output adjoint.
 
@@ -141,13 +144,13 @@ class Value:
         TENSOR_COUNTER -= 1
 
     def _init(
-        self,
-        op: Optional[Op],
-        inputs: List["Tensor"],
-        *,
-        num_outputs: int = 1,
-        cached_data: List[object] = None,
-        requires_grad: Optional[bool] = None
+            self,
+            op: Optional[Op],
+            inputs: List["Tensor"],
+            *,
+            num_outputs: int = 1,
+            cached_data: List[object] = None,
+            requires_grad: Optional[bool] = None
     ):
         global TENSOR_COUNTER
         TENSOR_COUNTER += 1
@@ -219,13 +222,13 @@ class Tensor(Value):
     grad: "Tensor"
 
     def __init__(
-        self,
-        array,
-        *,
-        device: Optional[Device] = None,
-        dtype=None,
-        requires_grad=True,
-        **kwargs
+            self,
+            array,
+            *,
+            device: Optional[Device] = None,
+            dtype=None,
+            requires_grad=True,
+            **kwargs
     ):
         if isinstance(array, Tensor):
             if device is None:
@@ -412,14 +415,24 @@ def find_topo_sort(node_list: List[Value]) -> List[Value]:
     sort.
     """
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
+    result = []
+    visited = []
+    for node in node_list:
+        topo_sort_dfs(node, visited, result)
+    return result
     ### END YOUR SOLUTION
 
 
 def topo_sort_dfs(node, visited, topo_order):
     """Post-order DFS"""
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
+    if node in visited:
+        return
+    else:
+        for subnode in node.inputs:
+            topo_sort_dfs(subnode, visited, topo_order)
+        visited.append(node)
+        topo_order.append(node)
     ### END YOUR SOLUTION
 
 
