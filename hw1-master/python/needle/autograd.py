@@ -400,9 +400,17 @@ def compute_gradient_of_variables(output_tensor, out_grad):
 
     # Traverse graph in reverse topological order given the output_node that we are taking gradient wrt.
     reverse_topo_order = list(reversed(find_topo_sort([output_tensor])))
+    for node in reverse_topo_order:
+        v_i = sum(node_to_output_grads_list[node])
+        node.grad = v_i
+        if node.op is None:
+            continue
+        node_grad_list = node.op.gradient_as_tuple(v_i, node)
+        for node_input, node_grad  in zip(node.inputs, node_grad_list):
+            node_to_output_grads_list.setdefault(node_input, list())
+            node_to_output_grads_list[node_input].append(node_grad)
 
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
     ### END YOUR SOLUTION
 
 
