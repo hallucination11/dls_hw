@@ -232,17 +232,27 @@ class Summation(TensorOp):
 
     def gradient(self, out_grad, node):
         ### BEGIN YOUR SOLUTION
-        x = node.inputs[0]
-        in_dim = x.numpy().ndim
-        in_shape = x.numpy().shape
-        out_dim = out_grad.numpy().ndim
-        if self.axes is not None:
-            new_shape = list(in_shape)
-            for a in self.axes:
-                new_shape[a] = 1
+        # x = node.inputs[0]
+        # in_dim = x.numpy().ndim
+        # in_shape = x.numpy().shape
+        # out_dim = out_grad.numpy().ndim
+        # if self.axes is not None:
+        #     new_shape = list(in_shape)
+        #     for a in self.axes:
+        #         new_shape[a] = 1
+        # else:
+        #     new_shape = array_api.ones(len(in_shape), dtype=int)
+        # return out_grad.reshape(new_shape).broadcast_to(x.shape)
+
+        input_shape = node.inputs[0].shape
+        broadcast_shape = list(input_shape)
+        if self.axes:
+            for i in self.axes:
+                broadcast_shape[i] = 1
         else:
-            new_shape = array_api.ones(len(in_shape), dtype=int)
-        return out_grad.reshape(new_shape).broadcast_to(x.shape)
+            broadcast_shape = [1 for _ in range(len(broadcast_shape))]  # (1, 1, 1, 1)
+        out_grad = reshape(out_grad, broadcast_shape)
+        return out_grad * array_api.ones(input_shape, dtype=array_api.float32)
         ### END YOUR SOLUTION
 
 
@@ -297,12 +307,13 @@ def negate(a):
 class Log(TensorOp):
     def compute(self, a):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        return array_api.log(a)
         ### END YOUR SOLUTION
 
     def gradient(self, out_grad, node):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        lhs = node.inputs[0]
+        return out_grad / lhs
         ### END YOUR SOLUTION
 
 
@@ -313,12 +324,12 @@ def log(a):
 class Exp(TensorOp):
     def compute(self, a):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        return array_api.exp(a)
         ### END YOUR SOLUTION
 
     def gradient(self, out_grad, node):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        return exp(out_grad * node.inputs[0])
         ### END YOUR SOLUTION
 
 

@@ -30,7 +30,31 @@ def parse_mnist(image_filesname, label_filename):
                 for MNIST will contain the values 0-9.
     """
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
+    path = "/content/drive/MyDrive/10714/hw0/"
+    kind = 'train'
+    # labels_path = os.path.join(path + label_filename,'%s-labels-idx1-ubyte.gz'% kind)
+    labels_path = path + label_filename
+    # images_path = os.path.join(path + image_filename,'%s-images-idx3-ubyte.gz'% kind)
+    images_path = path + image_filesname
+    image = []
+    with gzip.open(labels_path, 'rb') as lbpath:
+        magic, n = struct.unpack('>II', lbpath.read(8))
+        # print("label size {}".format(n))
+        labels = np.fromstring(lbpath.read(), dtype=np.uint8)
+        with gzip.open(images_path, 'rb') as imgpath:
+            magic, num, rows, cols = struct.unpack('>IIII', imgpath.read(16))
+            # print("rows {}".format(rows))
+            # print("cols {}".format(cols))
+            images = np.fromstring(imgpath.read(), dtype=np.uint8).reshape(len(labels), 784)
+            t = np.empty((len(labels), 784)).astype(np.float32)
+            max, min = 255.0, 0.0
+            t = ((images - min) / (max - min)).astype(np.float32)
+
+            # for i in range(len(labels)):
+            #  max,min = images[i].max(axis=0), images[i].min(axis=0)
+            #  t[i] = ((images[i] - min) / (max - min)).astype(np.float32)
+            # _q5ZrC2lZOgabt4RYXMyg
+    return t, labels
     ### END YOUR SOLUTION
 
 
@@ -51,7 +75,18 @@ def softmax_loss(Z, y_one_hot):
         Average softmax loss over the sample. (ndl.Tensor[np.float32])
     """
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
+    # n = Z.shape[0]
+    # x_exp = ndl.exp(Z)
+    # x_sum = ndl.sum(x_exp)
+    # softmax_k = x_exp / x_sum
+    # return -ndl.sum(ndl.log(softmax_k) * y_one_hot) / n
+    n = Z.shape[0]
+    x = exp(Z).sum(1)
+    y = log(x).sum()
+    z = (Z * y_one_hot).sum()
+    loss = y - z
+    return loss / n
+    # raise NotImplementedError()
     ### END YOUR SOLUTION
 
 
