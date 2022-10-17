@@ -2,6 +2,7 @@ import sys
 
 sys.path.append('./python')
 sys.path.append('./apps')
+print(sys.path)
 from simple_ml import *
 import numdifftools as nd
 import numpy as np

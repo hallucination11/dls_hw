@@ -3,8 +3,11 @@ import gzip
 import numpy as np
 
 import sys
+
 sys.path.append('python/')
 import needle as ndl
+from needle.ops import exp, log, relu, matmul
+from needle.autograd import Tensor
 
 
 def parse_mnist(image_filesname, label_filename):
@@ -90,7 +93,7 @@ def softmax_loss(Z, y_one_hot):
     ### END YOUR SOLUTION
 
 
-def nn_epoch(X, y, W1, W2, lr = 0.1, batch=100):
+def nn_epoch(X, y, W1, W2, lr=0.1, batch=100):
     """ Run a single epoch of SGD for a two-layer neural network defined by the
     weights W1 and W2 (with no bias terms):
         logits = ReLU(X * W1) * W1
@@ -115,15 +118,47 @@ def nn_epoch(X, y, W1, W2, lr = 0.1, batch=100):
     """
 
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+    adata = np.array(y)
+
+    def make_one_hot(data1):
+        return (np.arange(adata.max() + 1) == data1[:, None]).astype(np.int_)
+
+    y_one_hot = make_one_hot(adata)
+
+    epoch = int(X.shape[0] / batch)
+
+    start = 0
+
+    for i in range(epoch):
+        X_batch = X[start: start + batch]
+        y_batch = y_one_hot[start: start + batch]
+
+        logits = ndl.matmul(ndl.relu(ndl.matmul(X_batch, W1)), W2)
+
+        loss = softmax_loss(logits, y_batch)
+
+        loss.backward()
+
+        new_W1 = Tensor(W1.numpy() - lr * W1.grad.numpy())
+
+        new_W2 = Tensor(W2.numpy() - lr * W2.grad.numpy())
+
+        W1, W2 = new_W1, new_W2
+
+        return (W1, W2)
+
+
+raise NotImplementedError()
+
+
+### END YOUR SOLUTION
 
 
 ### CODE BELOW IS FOR ILLUSTRATION, YOU DO NOT NEED TO EDIT
 
-def loss_err(h,y):
+def loss_err(h, y):
     """ Helper function to compute both loss and error"""
     y_one_hot = np.zeros((y.shape[0], h.shape[-1]))
     y_one_hot[np.arange(y.size), y] = 1
     y_ = ndl.Tensor(y_one_hot)
-    return softmax_loss(h,y_).numpy(), np.mean(h.numpy().argmax(axis=1) != y)
+    return softmax_loss(h, y_).numpy(), np.mean(h.numpy().argmax(axis=1) != y)

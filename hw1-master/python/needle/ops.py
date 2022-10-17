@@ -244,15 +244,13 @@ class Summation(TensorOp):
         #     new_shape = array_api.ones(len(in_shape), dtype=int)
         # return out_grad.reshape(new_shape).broadcast_to(x.shape)
 
-        input_shape = node.inputs[0].shape
-        broadcast_shape = list(input_shape)
-        if self.axes:
-            for i in self.axes:
-                broadcast_shape[i] = 1
-        else:
-            broadcast_shape = [1 for _ in range(len(broadcast_shape))]  # (1, 1, 1, 1)
-        out_grad = reshape(out_grad, broadcast_shape)
-        return out_grad * array_api.ones(input_shape, dtype=array_api.float32)
+        axes = self.axes if isinstance(self.axes, (list, type(None))) else [self.axes]
+        in_shape = node.inputs[0].shape
+        out_shape = out_grad
+        out_shape_padded = []
+        for dim_idx, dim_size in enumerate(in_shape):
+            out_shape_padded.append(1 if (axes is None or dim_idx in axes) else dim_size)
+        return broadcast_to(reshape(out_grad, shape=out_shape_padded), shape=in_shape)
         ### END YOUR SOLUTION
 
 
@@ -341,12 +339,13 @@ def exp(a):
 class ReLU(TensorOp):
     def compute(self, a):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        return array_api.max(a, 0)
         ### END YOUR SOLUTION
 
     def gradient(self, out_grad, node):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        lhs = node.inputs[0]
+        return out_grad if lhs > 0 else 0
         ### END YOUR SOLUTION
 
 
