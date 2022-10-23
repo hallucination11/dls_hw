@@ -49,8 +49,6 @@ def _child_modules(value: object) -> List["Module"]:
         return []
 
 
-
-
 class Module:
     def __init__(self):
         self.training = True
@@ -88,14 +86,14 @@ class Linear(Module):
         self.out_features = out_features
 
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        self.weight = init.xavier_normal(self.in_features, self.out_features)
+        self.bias = init.xavier_uniform(self.out_features, 1)
         ### END YOUR SOLUTION
 
     def forward(self, X: Tensor) -> Tensor:
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        return X @ self.weight + self.bias
         ### END YOUR SOLUTION
-
 
 
 class Flatten(Module):
@@ -130,7 +128,6 @@ class SoftmaxLoss(Module):
         ### END YOUR SOLUTION
 
 
-
 class BatchNorm1d(Module):
     def __init__(self, dim, eps=1e-5, momentum=0.1, device=None, dtype="float32"):
         super().__init__()
@@ -140,7 +137,6 @@ class BatchNorm1d(Module):
         ### BEGIN YOUR SOLUTION
         raise NotImplementedError()
         ### END YOUR SOLUTION
-
 
     def forward(self, x: Tensor) -> Tensor:
         ### BEGIN YOUR SOLUTION
@@ -164,7 +160,7 @@ class LayerNorm1d(Module):
 
 
 class Dropout(Module):
-    def __init__(self, p = 0.5):
+    def __init__(self, p=0.5):
         super().__init__()
         self.p = p
 
@@ -183,6 +179,3 @@ class Residual(Module):
         ### BEGIN YOUR SOLUTION
         raise NotImplementedError()
         ### END YOUR SOLUTION
-
-
-
