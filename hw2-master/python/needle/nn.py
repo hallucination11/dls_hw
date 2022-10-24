@@ -102,7 +102,11 @@ class Linear(Module):
 class Flatten(Module):
     def forward(self, X):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        n = X.shape[0]
+        dim = 1
+        for i in range(1, len(X.shape)):
+            dim *= X.shape[i]
+        return X.reshape((n, dim))
         ### END YOUR SOLUTION
 
 
