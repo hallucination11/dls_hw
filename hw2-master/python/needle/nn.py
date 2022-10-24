@@ -166,8 +166,25 @@ class BatchNorm1d(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         ### BEGIN YOUR SOLUTION
-        n = x.shape[0]
-        mean = ops.broadcast_to((x.sum(0) / n).reshape((n, 1)), x.shape)
+        n, n_feature = x.shape[0], x.shape[1]
+        w = ops.broadcast_to(self.weight, x.shape)
+        b = ops.broadcast_to(self.bias, x.shape)
+        if self.training:
+            m = (x.sum(0) / n)
+            mean = ops.broadcast_to(m, x.shape)
+            v = ((x - mean) ** 2).sum(0) / n
+            var = ops.broadcast_to(v, x.shape)
+            ret = w * (x - mean) / ((var + self.eps) ** 0.5) + b
+            self.running_mean = self.momentum * m + (
+                    1 - self.momentum) * self.running_mean
+            self.running_var = self.momentum * v + (
+                    1 - self.momentum) * self.running_var
+            return ret
+        else:
+            mean = ops.broadcast_to(self.running_mean, x.shape)
+            var = ops.broadcast_to(self.running_var, x.shape)
+            ret = (x - mean) / ((var + self.eps) ** 0.5) * w + b
+            return ret
         ### END YOUR SOLUTION
 
 
