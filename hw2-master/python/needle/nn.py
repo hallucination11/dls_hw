@@ -150,12 +150,24 @@ class BatchNorm1d(Module):
         self.eps = eps
         self.momentum = momentum
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        self.weight = Parameter(
+            Tensor(np.ones((dim)), device=device, dtype=dtype))
+        self.bias = Parameter(
+            Tensor(np.zeros((dim)), device=device, dtype=dtype))
+        self.running_mean = Tensor(np.zeros((dim)),
+                                   device=device,
+                                   dtype=dtype,
+                                   requires_grad=False)
+        self.running_var = Tensor(np.ones((dim)),
+                                  device=device,
+                                  dtype=dtype,
+                                  requires_grad=False)
         ### END YOUR SOLUTION
 
     def forward(self, x: Tensor) -> Tensor:
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        n = x.shape[0]
+        mean = ops.broadcast_to((x.sum(0) / n).reshape((n, 1)), x.shape)
         ### END YOUR SOLUTION
 
 
