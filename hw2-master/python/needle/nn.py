@@ -129,7 +129,13 @@ class Sequential(Module):
 class SoftmaxLoss(Module):
     def forward(self, logits: Tensor, y: Tensor):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        n = logits.shape[0]
+        label = init.one_hot(logits.shape[-1], i=y)
+        x = ops.exp(logits).sum(1)
+        y = ops.log(x).sum()
+        z = (logits * label).sum()
+        loss = y - z
+        return loss / n
         ### END YOUR SOLUTION
 
 
@@ -155,12 +161,21 @@ class LayerNorm1d(Module):
         self.dim = dim
         self.eps = eps
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        self.weight = Parameter(
+            Tensor(np.ones((dim)), device=device, dtype=dtype))
+        self.bias = Parameter(
+            Tensor(np.zeros((dim)), device=device, dtype=dtype))
         ### END YOUR SOLUTION
 
     def forward(self, x: Tensor) -> Tensor:
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        n = x.shape[0]
+        mean = ops.broadcast_to((x.sum(1) / self.dim).reshape((n, 1)), x.shape)
+        var = ((x - mean)**2).sum(1).reshape((n, 1)) / self.dim
+        ret = (x - mean) / ops.broadcast_to(
+            ops.power_scalar(var + self.eps, 0.5), x.shape) * ops.broadcast_to(
+            self.weight, x.shape) + ops.broadcast_to(self.bias, x.shape)
+        return ret
         ### END YOUR SOLUTION
 
 

@@ -368,7 +368,13 @@ class Exp(TensorOp):
 
     def gradient(self, out_grad, node):
         ### BEGIN YOUR SOLUTION
-        return exp(out_grad * node.inputs[0])
+        # return exp(out_grad * node.inputs[0])
+        ipt = node.inputs[0]
+        # t = type(Tensor)
+        # t = type(exp(ipt))
+        grad = out_grad * exp(ipt)
+        # t = type(grad)
+        return [grad]
         ### END YOUR SOLUTION
 
 
