@@ -25,7 +25,7 @@ class SGD(Optimizer):
 
     def step(self):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        return None
         ### END YOUR SOLUTION
 
 
