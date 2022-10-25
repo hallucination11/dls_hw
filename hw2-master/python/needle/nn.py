@@ -219,7 +219,14 @@ class Dropout(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        shape = x.shape
+        mask = init.randb(*shape, p=1 - self.p)
+        if self.training:
+            x = mask * x
+            x = x / (1 - self.p)
+            return x
+        else:
+            return x
         ### END YOUR SOLUTION
 
 
@@ -230,5 +237,5 @@ class Residual(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        return self.fn(x) + x
         ### END YOUR SOLUTION
