@@ -241,6 +241,7 @@ def init_a_tensor_of_shape(shape, init_fn):
 
 
 def global_tensor_count():
+    print(np.array(ndl.autograd.TENSOR_COUNTER))
     return np.array(ndl.autograd.TENSOR_COUNTER)
 
 
